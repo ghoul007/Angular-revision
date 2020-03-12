@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { AuthServise } from './auth.Service';
+import { Router } from '@angular/router';
 // import {AuthService} from "../auth.service";
 
 @Component({
@@ -13,7 +14,7 @@ export class AuthComponent implements OnInit {
   isLoading = false;
   error: string = null;
   errorMessage: any;
-  constructor(private authService: AuthServise) { }
+  constructor(private authService: AuthServise, private router: Router) { }
 
   ngOnInit() {
   }
@@ -33,7 +34,7 @@ export class AuthComponent implements OnInit {
     if (this.isLoginMode) {
        this.authService.login(email, password).subscribe(resData => {
         console.log(resData);
-        // this.router.navigate(['home']);
+        this.router.navigate(['home']);
         this.isLoading = false;
       }, error => {
         this.error = error;
@@ -42,7 +43,7 @@ export class AuthComponent implements OnInit {
     } else {
       this.authService.signup(email, password).subscribe(resData => {
         console.log(resData);
-        // this.router.navigate(['home']);
+        this.router.navigate(['home']);
         this.isLoading = false;
       }, error => {
         this.error = error;
