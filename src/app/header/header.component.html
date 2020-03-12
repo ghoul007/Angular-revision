@@ -10,7 +10,7 @@
                 <!-- <li><a href="#" (click)="onSelect('recipe')">Recipes</a></li> -->
                 <!-- <li><a href="#" (click)="onSelect('shopping-list')">Shopping list</a></li> -->
                 <li routerLinkActive="active" *ngIf="isAuthenticated"><a routerLink="/recipes" >Recipes</a></li>
-                             <li routerLinkActive="active" *ngIf="!isAuthenticated"><a routerLink="/recauthipes" >Authenticate</a></li>
+                             <li routerLinkActive="active" *ngIf="!isAuthenticated"><a routerLink="/auth" >Authenticate</a></li>
                 <li routerLinkActive="active"><a routerLink="/shopping-list">Shopping list</a></li>
             </ul>
 
