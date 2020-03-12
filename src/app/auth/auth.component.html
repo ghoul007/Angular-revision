@@ -1,15 +1,25 @@
-<div class="row">
-  <div class="col-xs-12">
-    <form (ngSubmit)="onSignin(f)" #f="ngForm">
+
+<ng-template appPlaceholder></ng-template>
+<div class= "row">
+  <div class="col-xs-12 col-md-6 col-md-offset-3">
+    <!-- <div class="error alert alert-danger" *ngIf="error">{{ error }}</div> -->
+    <!-- <app-alert [message]="error" *ngIf="error" (close)="onHadleError()"></app-alert> -->
+    <div  *ngIf="isLoading">
+    <app-loading-spinner></app-loading-spinner>
+    </div>
+    <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)"  *ngIf="!isLoading" >
       <div class="form-group">
-        <label for="email">email</label>
-        <input type="email" id="email" name="email" ngModel class="form-control">
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" class="form-control" ngModel name="email" required email>
       </div>
       <div class="form-group">
-        <label for="password">password</label>
-        <input type="password" id="password" name="password" ngModel class="form-control">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" ngModel name="password" required minlength="6">
       </div>
-      <button class="btn btn-primary" type="submit" [disabled]="!f.valid">Sign in</button>
+      <div>
+        <button class="btn btn-primary" type="submit" [disabled]="!authForm.valid">{{ isLoginMode ? 'Loging' : 'Sign Up'}}</button> |
+        <button class="btn btn-primary" type="button" (click) = "onSwitchMode()">Switch to {{ isLoginMode ? 'Sign Up' : 'Login' }}</button>
+      </div>
     </form>
   </div>
 </div>
