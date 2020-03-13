@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Recipe } from '../recipes/recipe.model';
 import { RecipeService } from '../recipes/recipe.service';
-import { tap } from 'rxjs/operators'
+import { tap, take, exhaustMap } from 'rxjs/operators'
+import { AuthServise } from '../auth/auth.Service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataStorageService {
 
-  constructor(private http: HttpClient, private recipeService: RecipeService) { }
+  constructor(private http: HttpClient, private recipeService: RecipeService, private authService: AuthServise) { }
 
   storeRecipes() {
     return this.http.put(
@@ -20,25 +21,19 @@ export class DataStorageService {
 
 
   getRecipes() {
-    return this.http
-      .get(
-        'https://ng-recipe-book-29ea3.firebaseio.com/recipes.json'
-      )
-      // .pipe(
-      //   map((response: Response) => {
-      //     const recipes: Recipe[] = response.json();
-      //     for (let recipe of recipes) {
-      //       if (!recipe['ingredients']) {
-      //         recipe['ingredients'] = [];
-      //         console.log(recipe);
-      //       }
-      //     }
-      //     return recipes;
-      //   })
-      // )
-      .pipe(tap((recipes: Recipe[]) => {
+
+    this.authService.user.pipe(take(1), exhaustMap(user => {
+      return this.http
+        .get(
+          'https://ng-recipe-book-29ea3.firebaseio.com/recipes.json', { params: new HttpParams().set('auth', user.token) }
+        )
+    }),
+      tap((recipes: Recipe[]) => {
         this.recipeService.setRecipes(recipes);//After recipes are recieved set recipes object
       }));
+
+
+
   }
 }
 
