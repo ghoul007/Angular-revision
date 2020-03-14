@@ -34,6 +34,7 @@ export class AuthServise {
         const expDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
         const user = new User(resData.email, resData.localId, resData.idToken, expDate);
         this.user.next(user);
+        localStorage.setItem("userData", JSON.stringify(user));
       }));
   }
 
@@ -49,13 +50,33 @@ export class AuthServise {
       const expDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
       const user = new User(resData.email, resData.localId, resData.idToken, expDate);
       this.user.next(user);
+      localStorage.setItem("userData", JSON.stringify(user));
     }));
   }
+
+  autoLogin() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (!userData)
+      return;
+    const loadedUser = new User(
+      userData.email, userData.id, userData._token, userData._tokenExpirationDate
+    )
+
+    if (loadedUser.token) {
+      this.user.next(loadedUser);
+
+      let expDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+      console.log('autologin time :', expDuration)
+      // this.autoLogout(expDuration)
+    }
+  }
+
 
 
   logout() {
     this.user.next(null);
     this.router.navigate(['auth'])
+    localStorage.removeItem('userData')
   }
 
 
