@@ -18,6 +18,8 @@ interface AuthResponseData {
 @Injectable({ providedIn: 'root' })
 export class AuthServise {
   user = new Subject<User>();
+  private expTimer;
+
   constructor(private http: HttpClient, private router: Router) {
 
   }
@@ -35,6 +37,7 @@ export class AuthServise {
         const user = new User(resData.email, resData.localId, resData.idToken, expDate);
         this.user.next(user);
         localStorage.setItem("userData", JSON.stringify(user));
+        this.autoLogout(+expDate * 1000)
       }));
   }
 
@@ -51,6 +54,7 @@ export class AuthServise {
       const user = new User(resData.email, resData.localId, resData.idToken, expDate);
       this.user.next(user);
       localStorage.setItem("userData", JSON.stringify(user));
+      this.autoLogout(+expDate * 1000)
     }));
   }
 
@@ -67,7 +71,7 @@ export class AuthServise {
 
       let expDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
       console.log('autologin time :', expDuration)
-      // this.autoLogout(expDuration)
+      this.autoLogout(expDuration)
     }
   }
 
@@ -77,6 +81,16 @@ export class AuthServise {
     this.user.next(null);
     this.router.navigate(['auth'])
     localStorage.removeItem('userData')
+    if (this.expTimer) {
+      clearTimeout(this.expTimer);
+    }
+    this.expTimer = null;
+  }
+
+  autoLogout(expDuration: number) {
+    this.expTimer = setTimeout(() => {
+      this.logout();
+    }, expDuration)
   }
 
 
