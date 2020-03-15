@@ -1,3 +1,4 @@
+import { AuthServise } from './auth/auth.Service';
 import { ShoppingListService } from './shopping-list/shopping-list.service';
 import { DropdownDirective } from './shared/dropdown.directive';
 import { BrowserModule } from '@angular/platform-browser';
@@ -44,7 +45,7 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [ShoppingListService, RecipeService,
+  providers: [ShoppingListService, RecipeService, AuthServise,
    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}
   ],
   bootstrap: [AppComponent]

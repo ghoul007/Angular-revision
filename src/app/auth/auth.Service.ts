@@ -1,111 +1,124 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { catchError, tap } from 'rxjs/operators';
-import { throwError, Subject } from 'rxjs';
-import { User } from './user.model';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {catchError, tap} from 'rxjs/internal/operators';
+import {BehaviorSubject, throwError} from 'rxjs';
+import {User} from './user.model';
+import {Router} from '@angular/router';
 
-interface AuthResponseData {
-  kind: string;
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
+export interface AuthResponse {
+  idToken	:string
+  email	:string
+  refreshToken	:string
+  expiresIn	:string
+  localId	:string
+  registered ?:	boolean
 }
 
-
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class AuthServise {
-  user = new Subject<User>();
+
+  user = new BehaviorSubject<User>(null);
   private expTimer;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http:HttpClient,
+              private router:Router) {}
 
+  signup(userData){
+    return this.http
+      .post<AuthResponse>(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDx7iNUi6tfwdfNFFbQhu16Ej_rgflTluE',
+        {
+            email: userData.email,
+            password: userData.password,
+            returnSecureToken:true
+      }).pipe(catchError(
+        this.handleError),
+        tap((resData)=> {
+          this.handleUser(resData.email, resData.localId,resData.expiresIn,resData.expiresIn);
+        }
+      ))
   }
-  signup(email1: string, password1: string) {
-    return this.http.post<AuthResponseData>(
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyDx7iNUi6tfwdfNFFbQhu16Ej_rgflTluE',
+
+  login(userData){
+
+    return this.http.post<AuthResponse>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDx7iNUi6tfwdfNFFbQhu16Ej_rgflTluE',
       {
-        email: email1,
-        password: password1,
-        returnSecureToken: true
-      }
-    )
-      .pipe(catchError(this.handleError1), tap(resData => {
-        const expDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
-        const user = new User(resData.email, resData.localId, resData.idToken, expDate);
-        this.user.next(user);
-        localStorage.setItem("userData", JSON.stringify(user));
-        this.autoLogout(+expDate * 1000)
-      }));
+        email: userData.email,
+        password: userData.password,
+        returnSecureToken:true
+      }).pipe(catchError(this.handleError),
+      tap((resData)=> {
+        this.handleUser(resData.email, resData.localId,resData.idToken,resData.expiresIn);
+      }))
   }
 
-  login(email1: string, password1: string) {
-    return this.http.post<AuthResponseData>(
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyDx7iNUi6tfwdfNFFbQhu16Ej_rgflTluE',
-      {
-        email: email1,
-        password: password1,
-        returnSecureToken: true
-      }
-    ).pipe(catchError(this.handleError1), tap(resData => {
-      const expDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
-      const user = new User(resData.email, resData.localId, resData.idToken, expDate);
-      this.user.next(user);
-      localStorage.setItem("userData", JSON.stringify(user));
-      this.autoLogout(+expDate * 1000)
-    }));
-  }
-
-  autoLogin() {
+  autoLogin(){
     const userData = JSON.parse(localStorage.getItem('userData'));
-    if (!userData)
+    if(!userData)
       return;
     const loadedUser = new User(
-      userData.email, userData.id, userData._token, userData._tokenExpirationDate
+      userData.email,userData.id,userData._token,userData._tokenExpirationDate
     )
 
-    if (loadedUser.token) {
+    if(loadedUser.token){
       this.user.next(loadedUser);
 
       let expDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-      console.log('autologin time :', expDuration)
+      console.log('autologin time :',expDuration)
       this.autoLogout(expDuration)
     }
   }
 
-
-
   logout() {
     this.user.next(null);
-    this.router.navigate(['auth'])
-    localStorage.removeItem('userData')
-    if (this.expTimer) {
+    localStorage.removeItem('userData');
+    this.router.navigate(['/auth']);
+    if(this.expTimer){
       clearTimeout(this.expTimer);
     }
     this.expTimer = null;
   }
 
-  autoLogout(expDuration: number) {
-    this.expTimer = setTimeout(() => {
+  autoLogout(expDuration:number){
+    this.expTimer =  setTimeout(() => {
       this.logout();
-    }, expDuration)
+    },expDuration)
   }
 
+  handleUser(email:string,id:string,token:string ,exp:string){
+    let expDate = new Date(new Date().getTime() + +exp * 1000);
 
+    let user = new User(
+      email,id,token,expDate
+    );
+    this.user.next(user);
+    localStorage.setItem('userData',JSON.stringify(user));
+    console.log('user loginlou',+exp * 1000)
+    this.autoLogout(+exp * 1000)
+  }
 
-  private handleError1(errorRes: HttpErrorResponse) {
-    let errorMessage = 'An unknown error occurred!';
-    if (!errorRes.error || !errorRes.error.error) {
-      return throwError(errorMessage);
+  handleError(errorRes:HttpErrorResponse){
+
+    let errorMessage = 'This is a Unknown Error';
+
+    if(!errorRes.error || !errorRes.error.error){
+      return throwError(errorMessage)
     }
-    switch (errorRes.error.error.message) {
+
+    switch (errorRes.error.error.message){
       case 'EMAIL_EXISTS':
-        errorMessage = 'This email is already registered!';
-      // tslint:disable-next-line: no-switch-case-fall-through
+        errorMessage='This Email already Exist.'
+            break;
+      case 'EMAIL_NOT_FOUND':
+        errorMessage='This Email is Not Found.'
+            break;
+      case 'INVALID_PASSWORD' :
+        errorMessage='Wrong Password , PLease Try again.'
+            break;
+      case 'USER_DISABLED' :
+        errorMessage = 'Premium Member Only';
+            break;
     }
     return throwError(errorMessage);
   }
-
 }

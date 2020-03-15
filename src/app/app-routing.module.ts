@@ -25,7 +25,8 @@ const approutes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(approutes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers:[AuthGaurd]
 })
 export class AppRoutingModule {
 
