@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
-import { AuthComponent } from './auth/auth.component';
-import { AuthGaurd } from './auth/auth.guard';
+
 
 
 
@@ -13,13 +11,12 @@ const approutes: Routes = [
   //   loadChildren: './recipes/recipe.module#RecipeModule'
   // },
 
-  { path: 'auth', component: AuthComponent }
+
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(approutes)],
-  exports: [RouterModule],
-  providers: [AuthGaurd]
+  exports: [RouterModule]
 })
 export class AppRoutingModule {
 

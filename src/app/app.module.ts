@@ -10,13 +10,12 @@ import { HeaderComponent } from './header/header.component';
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from "@angular/common/http";
-import { AuthComponent } from './auth/auth.component';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    AuthComponent,
   ],
   imports: [
     BrowserModule,
@@ -27,7 +26,8 @@ import { AuthComponent } from './auth/auth.component';
     RecipeModule,
     ShoppingListModule,
     SharedModule,
-    CoreModule
+    CoreModule,
+    AuthModule
   ],
   bootstrap: [AppComponent]
 })
