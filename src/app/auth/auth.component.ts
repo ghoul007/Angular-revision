@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { PlaceHolderDirective } from './../shared/placeholder/placeholder.directive';
+import { AlertComponent } from './../shared/alert/alert/alert.component';
+import { Component, OnInit, ComponentFactoryResolver, ViewChild, OnDestroy } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { AuthServise } from './auth.Service';
 import { Router } from '@angular/router';
@@ -9,12 +11,16 @@ import { Router } from '@angular/router';
   templateUrl: './auth.component.html',
   // styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, OnDestroy {
   isLoginMode = true;
   isLoading = false;
   error: string = null;
   errorMessage: any;
-  constructor(private authService: AuthServise, private router: Router) { }
+
+  @ViewChild(PlaceHolderDirective, { static: false }) alertHost: PlaceHolderDirective;
+  closeSubscription: any;
+
+  constructor(private authService: AuthServise, private router: Router, private componentFactoryResolver: ComponentFactoryResolver) { }
 
   ngOnInit() {
   }
@@ -25,28 +31,30 @@ export class AuthComponent implements OnInit {
 
   onSubmit(form: NgForm) {
 
-    this.isLoading =  true
+    this.isLoading = true
     if (!form.valid) {
       return;
     }
     const email = form.value.email;
     const password = form.value.password;
     if (this.isLoginMode) {
-       this.authService.login({email, password}).subscribe(resData => {
+      this.authService.login({ email, password }).subscribe(resData => {
         console.log(resData);
         this.router.navigate(['recipes']);
         this.isLoading = false;
       }, error => {
         this.error = error;
+        this.showErrorAlert(error)
         this.isLoading = false;
       });
     } else {
-      this.authService.signup({email, password}).subscribe(resData => {
+      this.authService.signup({ email, password }).subscribe(resData => {
         console.log(resData);
         this.router.navigate(['recipes']);
         this.isLoading = false;
       }, error => {
         this.error = error;
+        this.showErrorAlert(error)
         this.isLoading = false;
       });
     }
@@ -55,7 +63,26 @@ export class AuthComponent implements OnInit {
 
   }
 
-  onHadleError(){
+  onHadleError() {
     this.error = null;
   }
+
+  private showErrorAlert(message: string) {
+    const alertComponentFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+    const hostViewContainerRef = this.alertHost.viewContainerRef;
+    hostViewContainerRef.clear();
+    const componentRef = hostViewContainerRef.createComponent(alertComponentFactory);
+    componentRef.instance.message = message;
+    this.closeSubscription = componentRef.instance.close.subscribe(() => {
+      this.closeSubscription.unsubscribe();
+      hostViewContainerRef.clear();
+    })
+  }
+
+  ngOnDestroy() {
+    if (this.closeSubscription) {
+      this.closeSubscription.unsubscribe();
+    }
+  }
+
 }
