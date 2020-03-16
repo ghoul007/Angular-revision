@@ -8,11 +8,11 @@ import { AuthGaurd } from './auth/auth.guard';
 
 const approutes: Routes = [
   { path: '', redirectTo: '/recipes', pathMatch: 'full' },
-  {
-    path: 'recipes',
-    loadChildren: './recipes/recipe.module#RecipeModule'
-  },
-  { path: 'shopping-list', component: ShoppingListComponent },
+  // {
+  //   path: 'recipes',
+  //   loadChildren: './recipes/recipe.module#RecipeModule'
+  // },
+
   { path: 'auth', component: AuthComponent }
 ];
 
