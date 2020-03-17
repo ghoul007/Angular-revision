@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
         PlaceHolderDirective,
         DropdownDirective,
         CommonModule
-    ]
+    ],
 })
 
 export class SharedModule { }
