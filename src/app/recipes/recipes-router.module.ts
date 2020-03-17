@@ -9,7 +9,10 @@ import { AuthGaurd } from '../auth/auth.guard';
 
 const recipeRoute: Routes = [
     {
-              path: 'recipes', canActivate: [AuthGaurd], component: RecipesComponent, children: [
+        path: '',
+        canActivate: [AuthGaurd],
+        component: RecipesComponent,
+        children: [
             { path: '', component: RecipeStartComponent },
             { path: 'new', component: RecipeEditComponent },
             { path: ':id', component: RecipeDetailComponent, resolve: [RecipeResolverService] },
@@ -22,4 +25,4 @@ const recipeRoute: Routes = [
     exports: [RouterModule]
 })
 
-export class RecipeRoutingModule {}
+export class RecipeRoutingModule { }

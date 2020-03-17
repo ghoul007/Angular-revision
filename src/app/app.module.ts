@@ -1,7 +1,7 @@
+import { AuthGaurd } from './auth/auth.guard';
 import { CoreModule } from './core.module';
 import { SharedModule } from './shared/shared.module';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
-import { RecipeModule } from './recipes/recipe.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
@@ -23,12 +23,10 @@ import { AuthModule } from './auth/auth.module';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RecipeModule,
-    ShoppingListModule,
     SharedModule,
     CoreModule,
-    AuthModule
   ],
+  providers:[AuthGaurd],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
