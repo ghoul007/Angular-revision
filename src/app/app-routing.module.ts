@@ -15,7 +15,7 @@ const approutes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(approutes, { preloadingStrategy: PreloadAllModules })],
+  imports: [RouterModule.forRoot(approutes, { preloadingStrategy: PreloadAllModules, initialNavigation: 'enabled' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {

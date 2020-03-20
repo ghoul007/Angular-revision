@@ -11,3 +11,17 @@ firebase init
 firebase deploy
 ```
 
+## Angular universal
+
+```
+ng add @nguniversal/express-engine  --clientProject tuto
+npm i @nguniversal/module-map-ngfactory-loader (for lazyloader)
+npm  run build:ssr
+npm  run serve:ssr
+```
+
+## use nestjs
+```
+ng add @nestjs/ng-universal
+npm  run build:ssr
+```
