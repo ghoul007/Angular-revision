@@ -11,6 +11,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from "@angular/common/http";
 import { AuthModule } from './auth/auth.module';
+import { StoreModule } from "@ngrx/store";
+import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+
 
 @NgModule({
   declarations: [
@@ -25,6 +28,9 @@ import { AuthModule } from './auth/auth.module';
     HttpClientModule,
     SharedModule,
     CoreModule,
+    StoreModule.forRoot({
+      shoppingList: shoppingListReducer
+    })
   ],
   providers:[AuthGaurd],
   bootstrap: [AppComponent]
