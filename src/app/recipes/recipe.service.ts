@@ -1,8 +1,8 @@
+import { AppState } from './../store/app.reducer';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { ShoppingListService } from './../shopping-list/shopping-list.service';
 import * as ShoppingListActions from './../shopping-list/store/shopping-list.action';
-import * as fromShoppingList from './../shopping-list/store/shopping-list.reducer';
 import { Ingredient } from './../shared/ingredient.model';
 import { EventEmitter, Injectable, OnInit } from '@angular/core';
 
@@ -24,7 +24,7 @@ export class RecipeService {
             [new Ingredient('ingredient 3', 7)])
     ];
 
-    constructor(private slService: ShoppingListService, private store: Store<fromShoppingList.AppState>) { }
+    constructor(private slService: ShoppingListService, private store: Store<AppState>) { }
 
     getRecipes() {
         // defensive copy
