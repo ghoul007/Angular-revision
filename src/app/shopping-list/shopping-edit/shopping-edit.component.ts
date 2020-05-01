@@ -19,7 +19,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   subscription: Subscription
   editedItem: Ingredient;
 
-  constructor(private slService: ShoppingListService, 
+  constructor(private slService: ShoppingListService,
     private store: Store<{ shoppingList: { ingredients: Ingredient[] } }>) { }
 
   ngOnInit() {
@@ -39,17 +39,20 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     const newIngredient = new Ingredient(name, amount);
     if (this.editMode) {
       this.slService.updateIngredient(this.editedItemIndex, newIngredient);
+      this.store.dispatch(new ShoppingListActions.UpdateIngredient({ index: this.editedItemIndex, ingredient: newIngredient }))
+
     } else {
       // this.slService.addIngredient(newIngredient);
-      this.store.dispatch(new ShoppingListActions.AddIngredient(newIngredient) )
+      this.store.dispatch(new ShoppingListActions.AddIngredient(newIngredient))
     }
 
-    this.editMode =  false;
+    this.editMode = false;
     form.reset();
   }
 
   onDelete() {
-    this.slService.deleteIngredient(this.editedItemIndex);
+    // this.slService.deleteIngredient(this.editedItemIndex);
+    this.store.dispatch(new ShoppingListActions.DeleteIngredient(this.editedItemIndex))
     this.onClear();
   }
 
