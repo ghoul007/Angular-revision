@@ -25,3 +25,10 @@ npm  run serve:ssr
 ng add @nestjs/ng-universal
 npm  run build:ssr
 ```
+
+
+## use ngrx
+
+```
+npm i -D @ngrx/store
+```
