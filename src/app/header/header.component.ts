@@ -1,3 +1,4 @@
+import * as RecipeActions  from './../recipes/store/recipe.actions';
 import * as AuthActions  from './../auth/store/auth.action';
 import { Store } from '@ngrx/store';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
@@ -35,7 +36,8 @@ export class HeaderComponent implements OnInit {
   }
 
   onFetchData() {
-    this.dataStorageService.getRecipes();
+    this.store.dispatch(new RecipeActions.FetchRcipes());
+    // this.dataStorageService.getRecipes();
   }
 
   logout() {
