@@ -1,3 +1,5 @@
+import { AppState } from './../store/app.reducer';
+import { Store } from '@ngrx/store';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -5,6 +7,9 @@ import { catchError, tap } from 'rxjs/internal/operators';
 import { BehaviorSubject, throwError } from 'rxjs';
 import { User } from './user.model';
 import { Router } from '@angular/router';
+import * as AuthActions from "./store/auth.action";
+import * as AuthReducers from "./store/auth.reducer";
+
 
 export interface AuthResponse {
   idToken: string
@@ -22,7 +27,7 @@ export class AuthServise {
   private expTimer;
 
   constructor(private http: HttpClient,
-    private router: Router) { }
+    private router: Router, private store: Store<AppState>) { }
 
   signup(userData) {
     return this.http
@@ -62,7 +67,12 @@ export class AuthServise {
     )
 
     if (loadedUser.token) {
-      this.user.next(loadedUser);
+      // this.user.next(loadedUser);
+      this.store.dispatch(new AuthActions.Login({
+        email: loadedUser.email,
+        userId: loadedUser.id, token: loadedUser.token,
+        expirationDate: userData._tokenExpirationDate
+      }));
 
       let expDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
       console.log('autologin time :', expDuration)
@@ -71,7 +81,8 @@ export class AuthServise {
   }
 
   logout() {
-    this.user.next(null);
+    this.store.dispatch(new AuthActions.Logout());
+    // this.user.next(null);
     localStorage.removeItem('userData');
     this.router.navigate(['/auth']);
     if (this.expTimer) {
@@ -92,7 +103,10 @@ export class AuthServise {
     let user = new User(
       email, id, token, expDate
     );
-    this.user.next(user);
+
+    this.store.dispatch(new AuthActions.Login({ email: user.email, userId: user.id, token: user.token, expirationDate: expDate }));
+
+    // this.user.next(user);
     localStorage.setItem('userData', JSON.stringify(user));
     console.log('user loginlou', +exp * 1000)
     this.autoLogout(+exp * 1000)
