@@ -31,4 +31,5 @@ npm  run build:ssr
 
 ```
 npm i -D @ngrx/store
+npm i -S @ngrx/effects
 ```

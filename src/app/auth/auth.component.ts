@@ -1,9 +1,12 @@
+import { Store } from '@ngrx/store';
 import { PlaceHolderDirective } from './../shared/placeholder/placeholder.directive';
 import { AlertComponent } from './../shared/alert/alert/alert.component';
 import { Component, OnInit, ComponentFactoryResolver, ViewChild, OnDestroy } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { AuthServise } from './auth.Service';
 import { Router } from '@angular/router';
+import { AppState } from '../store/app.reducer';
+import * as AuthActions from './store/auth.action'
 // import {AuthService} from "../auth.service";
 
 @Component({
@@ -20,9 +23,19 @@ export class AuthComponent implements OnInit, OnDestroy {
   @ViewChild(PlaceHolderDirective, { static: false }) alertHost: PlaceHolderDirective;
   closeSubscription: any;
 
-  constructor(private authService: AuthServise, private router: Router, private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private authService: AuthServise, private router: Router,
+     private componentFactoryResolver: ComponentFactoryResolver,
+     private store: Store<AppState>
+     ) { }
 
   ngOnInit() {
+
+
+    this.store.select('auth').subscribe(authState=>{
+      this.isLoading = authState.loading;
+      this.error = authState.authError
+    })
+    
   }
 
   onSwitchMode() {
@@ -38,15 +51,27 @@ export class AuthComponent implements OnInit, OnDestroy {
     const email = form.value.email;
     const password = form.value.password;
     if (this.isLoginMode) {
-      this.authService.login({ email, password }).subscribe(resData => {
-        console.log(resData);
-        this.router.navigate(['recipes']);
-        this.isLoading = false;
-      }, error => {
-        this.error = error;
-        this.showErrorAlert(error)
-        this.isLoading = false;
-      });
+
+
+      this.store.dispatch(new AuthActions.LoginStart({ email, password }))
+
+      // this.store.select('auth').subscribe(authState=>{
+
+      // })
+
+      // this.authService.login({ email, password }).
+      // .subscribe(resData => {
+      //   console.log(resData);
+      //   this.router.navigate(['recipes']);
+      //   this.isLoading = false;
+      // }, error => {
+      //   this.error = error;
+      //   this.showErrorAlert(error)
+      //   this.isLoading = false;
+      // });
+
+
+
     } else {
       this.authService.signup({ email, password }).subscribe(resData => {
         console.log(resData);

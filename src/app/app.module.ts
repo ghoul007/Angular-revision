@@ -1,3 +1,4 @@
+import { AuthEffects } from './auth/store/auth.effects';
 import { appReducer } from './store/app.reducer';
 import { AuthGaurd } from './auth/auth.guard';
 import { CoreModule } from './core.module';
@@ -13,6 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from "@angular/common/http";
 import { AuthModule } from './auth/auth.module';
 import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from "@ngrx/effects";
 import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
 import { authReducer } from './auth/store/auth.reducer';
 
@@ -30,7 +32,8 @@ import { authReducer } from './auth/store/auth.reducer';
     HttpClientModule,
     SharedModule,
     CoreModule,
-    StoreModule.forRoot(appReducer)
+    StoreModule.forRoot(appReducer),
+    EffectsModule.forRoot([AuthEffects])
   ],
   providers: [AuthGaurd],
   bootstrap: [AppComponent]
