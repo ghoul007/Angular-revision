@@ -30,6 +30,8 @@ npm  run build:ssr
 ## use ngrx
 
 ```
-npm i -D @ngrx/store
+npm i -S @ngrx/store
 npm i -S @ngrx/effects
+npm i -D @ngrx/store-devtools
+npm i -S @ngrx/router-store
 ```
