@@ -3,14 +3,14 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTr
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/internal/operators';
-import { AuthServise } from './auth.Service';
+import { AuthService } from './auth.Service';
 import { AppState } from '../store/app.reducer';
 
 @Injectable()
 
 export class AuthGaurd implements CanActivate {
 
-  constructor(private authService: AuthServise,
+  constructor(private authService: AuthService,
     private router: Router,
     private store: Store<AppState>) { }
 

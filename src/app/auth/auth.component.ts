@@ -3,7 +3,7 @@ import { PlaceHolderDirective } from './../shared/placeholder/placeholder.direct
 import { AlertComponent } from './../shared/alert/alert/alert.component';
 import { Component, OnInit, ComponentFactoryResolver, ViewChild, OnDestroy } from '@angular/core';
 import { NgForm } from "@angular/forms";
-import { AuthServise } from './auth.Service';
+import { AuthService } from './auth.Service';
 import { Router } from '@angular/router';
 import { AppState } from '../store/app.reducer';
 import * as AuthActions from './store/auth.action'
@@ -23,7 +23,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   @ViewChild(PlaceHolderDirective, { static: false }) alertHost: PlaceHolderDirective;
   closeSubscription: any;
 
-  constructor(private authService: AuthServise, private router: Router,
+  constructor(private authService: AuthService, private router: Router,
      private componentFactoryResolver: ComponentFactoryResolver,
      private store: Store<AppState>
      ) { }
@@ -73,15 +73,16 @@ export class AuthComponent implements OnInit, OnDestroy {
 
 
     } else {
-      this.authService.signup({ email, password }).subscribe(resData => {
-        console.log(resData);
-        this.router.navigate(['recipes']);
-        this.isLoading = false;
-      }, error => {
-        this.error = error;
-        this.showErrorAlert(error)
-        this.isLoading = false;
-      });
+      this.store.dispatch(new AuthActions.SignupStart({ email, password }))
+      // this.authService.signup({ email, password }).subscribe(resData => {
+      //   console.log(resData);
+      //   this.router.navigate(['recipes']);
+      //   this.isLoading = false;
+      // }, error => {
+      //   this.error = error;
+      //   this.showErrorAlert(error)
+      //   this.isLoading = false;
+      // });
     }
     // this.authService.signInUser(form.value.email, form.value.password)
 
@@ -89,7 +90,8 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onHadleError() {
-    this.error = null;
+    this.store.dispatch(new AuthActions.ClearError());
+    // this.error = null;
   }
 
   private showErrorAlert(message: string) {
